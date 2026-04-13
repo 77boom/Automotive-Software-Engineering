@@ -29,6 +29,13 @@ void SIU_Init(void)
 	SIU.PCR[53].R = 0x100; // D5, task2's input
 
 
+	SIU.PCR[60].R = 0x100; // BT1, D12 task3‘s input
+	SIU.PCR[62].R = 0x100; //d14  BT2
+	SIU.PCR[54].R = 0x100;   /* SW3 -> D[6]  */
+	SIU.PCR[55].R = 0x100;   /* SW4 -> D[7]  */
+
+
+
 /* 	SIU.GPDO[x].R = <value>;
 
 	value = SIU.GPDI[x].R; */
