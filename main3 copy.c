@@ -14,9 +14,12 @@
 
 /* Global variables **********************************************************/
 
+int counter_value = 0;
+int count_direction = 0;
+
 // 计数器值，用于Task 3的二进制计数
 // 取值范围0-7（因为只有3个LED，只能显示3位二进制数）
-int counter_value = 0;
+
 
 
 /* ============================================================================
@@ -34,9 +37,11 @@ int counter_value = 0;
 void task_pot(int value){
     // 计算每个LED应该亮还是灭
     // threshold_1 = 4096 / 3 ≈ 1365
-    uint8_t p_led  = (value > 1365) ? 1 : 0;   // P LED是否亮
-    uint8_t rx_led = (value > 2730) ? 1 : 0;   // Rx LED是否亮
-    uint8_t tx_led = (value > 4095) ? 1 : 0;   // Tx LED是否亮（其实4095是最大值，这个条件永远不会满足）
+    uint8_t p_led  = (value > 683) ? 1 : 0;   // P LED是否亮
+    uint8_t rx_led = (value > 1365) ? 1 : 0;   // Rx LED是否亮
+    uint8_t tx_led = (value > 2730) ? 1 : 0;   // Tx LED是否亮（其实4095是最大值，这个条件永远不会满足）
+
+
 
     // 通过GPDO寄存器控制LED输出
     // GPDO[56]对应P LED，GPDO[57]对应Rx LED，GPDO[58]对应Tx LED
@@ -126,10 +131,10 @@ void task_counter(void){
  */
 uint8_t read_switch(uint8_t sw_num){
     // 根据开关编号返回对应的GPDI寄存器值
-    if (sw_num == 1) return SIU.GPDI[52].B.PDO;  // 读取SW1
-    if (sw_num == 2) return SIU.GPDI[53].B.PDO;  // 读取SW2
-    if (sw_num == 3) return SIU.GPDI[54].B.PDO;  // 读取SW3
-    if (sw_num == 4) return SIU.GPDI[55].B.PDO;  // 读取SW4
+    if (sw_num == 1) return SIU.GPDI[52].R;  // 读取SW1
+    if (sw_num == 2) return SIU.GPDI[53].R;  // 读取SW2
+    if (sw_num == 3) return SIU.GPDI[54].R;  // 读取SW3
+    if (sw_num == 4) return SIU.GPDI[55].R;  // 读取SW4
     return 0;  // 无效的开关编号
 }
 
@@ -150,8 +155,8 @@ uint8_t read_switch(uint8_t sw_num){
  */
 uint8_t read_button(uint8_t bt_num){
     // 根据按钮编号返回对应的GPDI寄存器值
-    if (bt_num == 1) return SIU.GPDI[60].B.PDO;  // 读取BT1
-    if (bt_num == 2) return SIU.GPDI[62].B.PDO;  // 读取BT2
+    if (bt_num == 1) return SIU.GPDI[60].R;  // 读取BT1
+    if (bt_num == 2) return SIU.GPDI[62].R;  // 读取BT2
     return 0;  // 无效的按钮编号
 }
 
@@ -253,10 +258,26 @@ void PIT_Channel_1(void){
     // 检查SW4是否打开
     // SW4=ON → 计数器递增
     // SW4=OFF → 计数器保持不变（停止计数）
+	static int last_bt1_state = 0;
+	int bt1_state  = read_button(1);
+
+	if (bt1_state == 1 && last_bt1_state == 0){
+		count_direction = !count_direction;
+
+	}
+
+	last_bt1_state = bt1_state;
+
     if (read_switch(4) == 1) {
+    	if(count_direction == 0){
+    		counter_value = (counter_value + 1) % 8;
+    	}
+    	else{
+    		counter_value = (counter_value - 1 + 8) % 8;
+    	}
         // counter_value从0数到7，然后回到0（模8运算）
         // 等价于: counter_value = counter_value + 1; if(counter_value > 7) counter_value = 0;
-        counter_value = (counter_value + 1) % 8;
+
     }
 }
 
