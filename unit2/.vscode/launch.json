@@ -1,0 +1,73 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch with Virtual ECU",
+            "preLaunchTask": "build_vecu_program",
+
+            "type": "cppdbg",
+            "request": "launch",
+            "windows": {
+                "program": "${workspaceFolder}/vtarget/win/vECU.UI.exe",
+                "miDebuggerPath": "${config:vecu.build_tools_directory}/gdb.exe",
+                "cwd": "${workspaceFolder}/vtarget/win",
+            },
+            "linux": {
+                "program": "${workspaceFolder}/vtarget/linux/vECU.UI",
+                "miDebuggerPath": "gdb",
+                "cwd": "${workspaceFolder}/vtarget/linux",
+            },
+            "program": "",
+            "args": ["${workspaceFolder}/bin/Debug/vEcuImpl.bin"],
+            "stopAtEntry": false,
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Handle SIGUSR1",
+                    "text": "handle SIGUSR1 nostop noprint pass",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Handle SIGUSR2",
+                    "text": "handle SIGUSR2 nostop noprint pass",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Handle SIG34",
+                    "text": "handle SIG34 nostop noprint pass noignore",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Omit thread info",
+                    "text": "set print thread-events off",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable auto shared lib loading",
+                    "text": "set auto-solib-add off",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable auto shared lib loading",
+                    "text": "sharedlibrary vEcuImpl.bin",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

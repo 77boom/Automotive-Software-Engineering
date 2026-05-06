@@ -1,0 +1,38 @@
+{
+    "version":"2.0.0",
+
+    // platform-specific option
+    "tasks": [
+        {
+            "label": "build_vecu_program",
+            "type": "cppbuild",
+            "command": "gcc",
+            "args": [
+                "-shared"           ,
+                "-fdiagnostics-color=always",
+                "-g",
+                "-fPIC",
+                "${workspaceFolder}/*.c",
+                "${workspaceFolder}/components/*.c",
+                "${workspaceFolder}/source/*.c",
+                "-I",
+                "${workspaceFolder}/components",
+                "-I",
+                "${workspaceFolder}/source",
+                "-o",
+                "${workspaceFolder}/bin/Debug/vEcuImpl.bin"
+            ],
+            "options": {
+                "cwd": "${config:vecu.build_tools_directory}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build the vECU program"
+        }
+    ],
+}
